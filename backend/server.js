@@ -10,18 +10,35 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// ─── Socket.io ───────────────────────────────────────────────────────────────
-const corsOrigin = (origin, callback) => callback(null, true); // Allow all origins
+// ─── CORS Configuration (RAILWAY OPTIMIZED) ──────────────────────────────────
+// This configuration ensures proper CORS headers are sent
+const corsOptions = {
+  origin: true, // Reflect the request origin (allows all origins with credentials)
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Length"],
+  maxAge: 86400, // Cache preflight for 24 hours
+};
 
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
+// Explicitly handle OPTIONS requests
+app.options('*', cors(corsOptions));
+
+// ─── Socket.io (RAILWAY OPTIMIZED) ───────────────────────────────────────────
 const io = new Server(server, {
   cors: {
-    origin: corsOrigin,
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    origin: true, // Allow all origins
     credentials: true,
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   },
   transports: ["websocket", "polling"],
   allowEIO3: true,
+  pingTimeout: 60000,
+  pingInterval: 25000,
 });
 
 // Track active windows: { windowNumber: { socketId, cashierName } }
@@ -36,6 +53,8 @@ const broadcastActiveWindows = () => {
 };
 
 io.on("connection", (socket) => {
+  console.log("✅ Socket connected:", socket.id);
+  
   // Global room — payors + all cashiers see waiting queue updates
   socket.on("join:queue-room", () => socket.join("queue:global"));
 
@@ -67,6 +86,7 @@ io.on("connection", (socket) => {
 
   // On disconnect, release any window this socket held
   socket.on("disconnect", () => {
+    console.log("❌ Socket disconnected:", socket.id);
     activeWindows.forEach((info, num) => {
       if (info.socketId === socket.id) {
         activeWindows.delete(num);
@@ -213,12 +233,6 @@ const getAnalyticsSnapshot = async () => {
 };
 
 // ─── App Middleware ───────────────────────────────────────────────────────────
-app.use(cors({
-  origin: corsOrigin,
-  credentials: true,
-  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
 app.use(express.json());
 
 const protect = async (req, res, next) => {
@@ -482,4 +496,5 @@ server.listen(PORT, () => {
   console.log(`🚀 Qampus running on http://localhost:${PORT}`);
   console.log(`📡 Socket.io ready`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`✅ CORS: Enabled for all origins with credentials`);
 });
