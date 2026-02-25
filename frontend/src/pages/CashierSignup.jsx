@@ -48,7 +48,7 @@ export default function CashierSignup() {
       // Auto-login after successful registration
       await login(form.username, form.password);
       addToast(`Welcome, ${res.data.user.name}! Account created.`, "success");
-      navigate("/cashier");
+      navigate("/cashier/login");
     } catch (err) {
       addToast(err.response?.data?.message || "Registration failed.", "error");
     } finally {

@@ -66,7 +66,9 @@ export default function Analytics() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Analytics & Reports</h1>
-        <p className={styles.subtitle}>Today — {data?.date}</p>
+        <p className={styles.subtitle}>
+          Today — {new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" })}
+        </p>
       </div>
 
       {/* Summary stats */}

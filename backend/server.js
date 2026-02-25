@@ -187,7 +187,7 @@ const queueSchema = new mongoose.Schema({
 queueSchema.index({ serviceDate: 1, status: 1 });
 const Queue = mongoose.models.Queue || mongoose.model("Queue", queueSchema);
 
-const today = () => new Date().toISOString().split("T")[0];
+const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
 
 // All active waiting/paused tickets (global — for payors to see their position)
 const getTodayQueue = () =>
