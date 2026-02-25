@@ -52,9 +52,9 @@
   gap: 6px;
   justify-content: center;
   margin-bottom: 20px;
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 800;
+  font-family: var(--font-logo);
+  font-weight: 600;
+  font-size: 26px;
 }
 
 .logoQ {

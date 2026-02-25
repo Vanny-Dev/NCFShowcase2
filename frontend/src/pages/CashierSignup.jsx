@@ -5,6 +5,7 @@ import { authAPI } from "../services/api";
 import Button from "../components/common/Button";
 import { useToast } from "../components/common/Toast";
 import styles from "./CashierSignup.module.css";
+import { Eye, EyeOff, Lock, AtSign, User } from "lucide-react";
 
 export default function CashierSignup() {
   const [form, setForm] = useState({ name: "", username: "", password: "", confirmPassword: "" });
@@ -63,8 +64,7 @@ export default function CashierSignup() {
       <div className={styles.card}>
         {/* Header */}
         <div className={styles.logoWrap}>
-          <span className={styles.logoQ}>Q</span>
-          <span className={styles.logoText}>ampus</span>
+          <span className={styles.logoText}><span className="" style={{color: "#F5A623"}}>Q</span>ampus</span>
         </div>
         <h1 className={styles.title}>Create Account</h1>
         <p className={styles.sub}>Register as a cashier to manage the queue</p>
@@ -74,7 +74,7 @@ export default function CashierSignup() {
           <div className={styles.field}>
             <label className={styles.label}>Full Name</label>
             <div className={styles.inputWrap}>
-              <span className={styles.inputIcon}>👤</span>
+              <span className={styles.inputIcon}><User size={16} /></span>
               <input
                 className={styles.input}
                 type="text"
@@ -90,7 +90,7 @@ export default function CashierSignup() {
           <div className={styles.field}>
             <label className={styles.label}>Username</label>
             <div className={styles.inputWrap}>
-              <span className={styles.inputIcon}>@</span>
+              <span className={styles.inputIcon}><AtSign size={16} /></span>
               <input
                 className={styles.input}
                 type="text"
@@ -107,7 +107,7 @@ export default function CashierSignup() {
           <div className={styles.field}>
             <label className={styles.label}>Password</label>
             <div className={styles.inputWrap}>
-              <span className={styles.inputIcon}>🔒</span>
+              <span className={styles.inputIcon}><Lock size={16} /></span>
               <input
                 className={styles.input}
                 type={showPass ? "text" : "password"}
@@ -117,7 +117,7 @@ export default function CashierSignup() {
                 autoComplete="new-password"
               />
               <button type="button" className={styles.eyeBtn} onClick={() => setShowPass(v => !v)}>
-                {showPass ? "🙈" : "👁️"}
+                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
             {/* Strength bar */}
@@ -135,7 +135,7 @@ export default function CashierSignup() {
           <div className={styles.field}>
             <label className={styles.label}>Confirm Password</label>
             <div className={`${styles.inputWrap} ${passwordsMatch ? styles.inputMatch : passwordsMismatch ? styles.inputMismatch : ""}`}>
-              <span className={styles.inputIcon}>🔒</span>
+              <span className={styles.inputIcon}><Lock size={16} /></span>
               <input
                 className={styles.input}
                 type={showConfirm ? "text" : "password"}
@@ -145,7 +145,7 @@ export default function CashierSignup() {
                 autoComplete="new-password"
               />
               <button type="button" className={styles.eyeBtn} onClick={() => setShowConfirm(v => !v)}>
-                {showConfirm ? "🙈" : "👁️"}
+                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
               {passwordsMatch && <span className={styles.matchIcon}>✓</span>}
               {passwordsMismatch && <span className={styles.mismatchIcon}>✗</span>}
