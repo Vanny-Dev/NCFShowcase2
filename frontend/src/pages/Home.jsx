@@ -25,8 +25,6 @@ const playBeep = (type = "alert") => {
         { freq: 880, start: 0,    duration: 0.15, gain: 0.6 },
         { freq: 880, start: 0.2,  duration: 0.15, gain: 0.6 },
         { freq: 1100,start: 0.4,  duration: 0.25, gain: 0.7 },
-        { freq: 1100,start: 0.7,  duration: 0.35, gain: 0.7 },
-        { freq: 1320,start: 1.1,  duration: 0.45, gain: 0.8 },
       ],
     };
 
@@ -66,13 +64,13 @@ const vibrate = (pattern) => {
 // Warning (2 min): 2 short pulses
 const notifyWarning = () => {
   playBeep("warning");
-  vibrate([200, 100, 200, 100, 200]);
+  vibrate([200, 100, 200]);
 };
 
 // Alert (your turn): 3 strong pulses
 const notifyAlert = () => {
   playBeep("alert");
-  vibrate([400, 150, 400, 150, 600, 150, 600, 150, 800]);
+  vibrate([400, 150, 400, 150, 600]);
 };
 
 
@@ -188,6 +186,10 @@ const MyTicket = ({ ticket, position, onLeave }) => {
           <div className={styles.statLbl}>{isCalled ? "Window" : "Est. Wait"}</div>
         </div>
       </div>
+
+      <div className={styles.ticketActions}>
+        <Button variant="danger" size="sm" onClick={onLeave}>Leave Queue</Button>
+      </div>
     </div>
   );
 };
@@ -258,7 +260,13 @@ export default function HomePage() {
           addToast("Your ticket was skipped. You may rejoin the queue.", "warning");
           setMyTicket(null);
         }
-      } catch {/* ticket gone */}
+      } catch (err) {
+        // Ticket not found in DB (deleted/reset) — clear it from UI
+        if (err?.response?.status === 404) {
+          setMyTicket(null);
+          addToast("Your ticket is no longer active.", "warning");
+        }
+      }
     };
     poll();
     const interval = setInterval(poll, 3000);
@@ -345,8 +353,6 @@ export default function HomePage() {
       {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroGlow} />
-        <div className={styles.heroGlowLeft} />
-        <div className={styles.heroGlowRight} />
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>NCF Cashier's Office</div>
           <h1 className={styles.heroTitle}>
