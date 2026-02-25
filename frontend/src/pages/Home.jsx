@@ -6,6 +6,7 @@ import useQueue from "../hooks/useQueue";
 import Button from "../components/common/Button";
 import { useToast } from "../components/common/Toast";
 import styles from "./Home.module.css";
+import useNotifications from "../hooks/useNotifications";
 
 // ─── Audio & Vibration Notifications ────────────────────────────────────────
 
@@ -87,6 +88,12 @@ const FeedbackModal = ({ ticketId, onClose }) => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
+  const { requestPermission, sendNotification } = useNotifications();
+
+  // Request notification permission when payor joins queue
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
   const handleSubmit = async () => {
     if (!rating) return;
@@ -220,6 +227,12 @@ export default function HomePage() {
   }, [myTicket]);
   const { waiting, loading } = useQueue();
   const { addToast } = useToast();
+  const { requestPermission, sendNotification } = useNotifications();
+
+  // Request notification permission when payor joins queue
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
   // Poll my ticket status
   useEffect(() => {
@@ -237,6 +250,9 @@ export default function HomePage() {
           if (!notifiedRef.current.alert) {
             notifiedRef.current.alert = true;
             notifyAlert();
+            sendNotification("NOTIFY_CALLED", {
+              message: `Please proceed to Cashier Window ${ticket.counter || ""}.`,
+            });
           }
         } else {
           // 3rd in line notification (position === 3)
@@ -244,11 +260,13 @@ export default function HomePage() {
             notifiedRef.current.thirdInLine = true;
             notifyWarning();
             addToast("⚠️ You are 3rd in line — get ready!", "warning");
+            sendNotification("NOTIFY_THIRD");
           }
           // ~2 min warning (position === 2 or less)
           if (estMinutes <= 2 && position > 1 && !notifiedRef.current.warning) {
             notifiedRef.current.warning = true;
             notifyWarning();
+            sendNotification("NOTIFY_WARNING");
           }
         }
 
@@ -281,6 +299,9 @@ export default function HomePage() {
         if (ticket._id === myTicket?._id) {
           setMyTicket(ticket);
           notifyAlert();
+          sendNotification("NOTIFY_CALLED", {
+            message: `Please proceed to Cashier Window ${ticket.counter || ""}.`,
+          });
           addToast(`🔔 It's your turn! Proceed to Cashier Window ${ticket.counter || 1}.`, "alert", 8000);
         }
       },
@@ -311,12 +332,14 @@ export default function HomePage() {
             notifiedRef.current.thirdInLine = true;
             notifyWarning();
             addToast("⚠️ You are 3rd in line — get ready!", "warning");
+            sendNotification("NOTIFY_THIRD");
           }
           // ~2 min warning
           const estMins = (newPosition - 1) * 3;
           if (estMins <= 2 && newPosition > 1 && !notifiedRef.current.warning) {
             notifiedRef.current.warning = true;
             notifyWarning();
+            sendNotification("NOTIFY_WARNING");
           }
         }
       },
