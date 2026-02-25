@@ -564,6 +564,8 @@ select.input option {
   .heroTitle { font-size: 36px; }
   .ticketNumber { font-size: 56px; }
   .heroGlow, .heroGlowLeft, .heroGlowRight { width: 500px; height: 300px; }
+  .heroGlowLeft { top: 10%; left: 0; }
+  .heroGlowRight { top: 10%; left: 100%; }
 }
 
 /* Warning banner */

@@ -376,6 +376,8 @@ export default function HomePage() {
       {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroGlow} />
+        <div className={styles.heroGlowLeft} />
+        <div className={styles.heroGlowRight} />
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>NCF Cashier's Office</div>
           <h1 className={styles.heroTitle}>
