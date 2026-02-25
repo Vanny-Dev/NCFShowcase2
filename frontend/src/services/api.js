@@ -19,7 +19,7 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem("qampus_token");
       localStorage.removeItem("qampus_user");
-      window.location.href = "/cashier/login";
+      window.location.href = "/";
     }
     return Promise.reject(err);
   }

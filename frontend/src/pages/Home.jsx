@@ -188,10 +188,6 @@ const MyTicket = ({ ticket, position, onLeave }) => {
           <div className={styles.statLbl}>{isCalled ? "Window" : "Est. Wait"}</div>
         </div>
       </div>
-
-      <div className={styles.ticketActions}>
-        <Button variant="danger" size="sm" onClick={onLeave}>Leave Queue</Button>
-      </div>
     </div>
   );
 };

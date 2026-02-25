@@ -26,10 +26,7 @@ export default function CashierLogin() {
       addToast("Welcome back! Dashboard loaded.", "success");
       navigate("/cashier");
     } catch (err) {
-      const message = err.response?.data?.message || "Invalid username or password.";
-      setError(message); // show error immediately
-      // Optional: auto-clear after 5 seconds
-      setTimeout(() => setError(""), 5000);
+      setError(err.response?.data?.message || "Invalid username or password.");
     } finally {
       setLoading(false);
     }
@@ -52,8 +49,7 @@ export default function CashierLogin() {
       <div className={styles.glow} />
       <div className={styles.card}>
         <div className={styles.logoWrap}>
-          <span className={styles.logoQ}>Q</span>
-          <span className={styles.logoText}>ampus</span>
+          <span className={styles.logoText}><span className="" style={{color: "#F5A623"}}>Q</span>ampus</span>
         </div>
         <h1 className={styles.title}>Cashier Portal</h1>
         <p className={styles.sub}>Sign in to manage the queue</p>
@@ -102,10 +98,12 @@ export default function CashierLogin() {
           </Button>
         </div> */}
 
-        <div className={styles.signupRow}>
-          Don't have an account?{" "}
-          <Link to="/cashier/signup" className={styles.signupLink}>Create one</Link>
-        </div>
+        {import.meta.env.VITE_ALLOW_SIGNUP === "true" && (
+          <div className={styles.signupRow}>
+            Don't have an account?{" "}
+            <Link to="/cashier/signup" className={styles.signupLink}>Create one</Link>
+          </div>
+        )}
       </div>
     </div>
   );

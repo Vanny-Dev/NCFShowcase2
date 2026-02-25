@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ToastProvider } from "./components/common/Toast";
 import Navbar from "./components/common/Navbar";
@@ -11,10 +11,10 @@ import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 import CashierSignup from "./pages/CashierSignup";
 
-// Updates document title based on current route
+// ── Page titles ───────────────────────────────────────────────────────────────
 const TITLES = {
-  "/": "Qampus",
-  "/home": "Qampus",
+  "/": "Qampus — NCF Queuing System",
+  "/home": "Qampus — NCF Queuing System",
   "/cashier": "Dashboard — Qampus",
   "/cashier/analytics": "Analytics — Qampus",
   "/cashier/login": "Login — Qampus",
@@ -29,29 +29,74 @@ const TitleUpdater = () => {
   return null;
 };
 
-// Redirects authenticated cashiers away from the payor home page
+// ── Smooth page transition ────────────────────────────────────────────────────
+const PageTransition = ({ children }) => {
+  const location = useLocation();
+  const [displayLocation, setDisplayLocation] = useState(location);
+  const [visible, setVisible] = useState(true);
+  const prevKey = useRef(location.key);
+
+  useEffect(() => {
+    if (location.key === prevKey.current) return;
+    prevKey.current = location.key;
+
+    // Fade out
+    setVisible(false);
+
+    const swap = setTimeout(() => {
+      // Swap page content then fade in
+      setDisplayLocation(location);
+      setVisible(true);
+    }, 300);
+
+    return () => clearTimeout(swap);
+  }, [location]);
+
+  return (
+    <div
+      style={{
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.3s ease",
+        willChange: "opacity",
+      }}
+    >
+      <Routes location={displayLocation}>
+        {children}
+      </Routes>
+    </div>
+  );
+};
+
+// ── Auth-aware routes ─────────────────────────────────────────────────────────
 const HomeRoute = () => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <Navigate to="/cashier" replace /> : <HomePage />;
 };
 
-// Redirects authenticated cashiers away from login/signup pages
 const LoginRoute = ({ fallback }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <Navigate to="/cashier" replace /> : (fallback || <CashierLogin />);
 };
 
+// ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
     <AuthProvider>
       <ToastProvider>
         <TitleUpdater />
         <Navbar />
-        <Routes>
+        <PageTransition>
           <Route path="/" element={<HomeRoute />} />
           <Route path="/home" element={<HomeRoute />} />
           <Route path="/cashier/login" element={<LoginRoute />} />
-          <Route path="/cashier/signup" element={<LoginRoute fallback={<CashierSignup />} />} />
+          <Route
+            path="/cashier/signup"
+            element={
+              import.meta.env.VITE_ALLOW_SIGNUP === "true"
+                ? <LoginRoute fallback={<CashierSignup />} />
+                : <NotFound />
+            }
+          />
           <Route
             path="/cashier"
             element={
@@ -69,7 +114,7 @@ export default function App() {
             }
           />
           <Route path="*" element={<NotFound />} />
-        </Routes>
+        </PageTransition>
       </ToastProvider>
     </AuthProvider>
   );

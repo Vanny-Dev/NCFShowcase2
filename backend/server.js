@@ -267,6 +267,7 @@ app.get("/api/auth/me", protect, (req, res) => res.json({ user: req.user }));
 
 app.post("/api/auth/register", async (req, res, next) => {
   try {
+    if (process.env.ALLOW_SIGNUP !== "true") return res.status(403).json({ message: "Registration is currently closed." });
     const { name, username, password, confirmPassword, counter } = req.body;
     if (!name || !username || !password) return res.status(400).json({ message: "Name, username, and password are required." });
     if (password !== confirmPassword) return res.status(400).json({ message: "Passwords do not match." });

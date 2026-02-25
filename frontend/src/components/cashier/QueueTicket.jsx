@@ -1,19 +1,19 @@
 import Button from "../common/Button";
 import styles from "./QueueTicket.module.css";
 
+const AUTO_CALL_NEXT = import.meta.env.VITE_AUTO_CALL_NEXT === "true";
+
 const STATUS_LABELS = {
   waiting: { label: "Waiting", color: "#F5A623" },
-  called: { label: "Called", color: "#10B981" },
+  called:  { label: "Called",  color: "#10B981" },
   serving: { label: "Serving", color: "#10B981" },
-
-  served: { label: "Served", color: "#38BDF8" },
+  served:  { label: "Served",  color: "#38BDF8" },
   skipped: { label: "Skipped", color: "#EF4444" },
 };
 
 const QueueTicket = ({ ticket, position, onServe, onSkip, showActions = true }) => {
   const statusInfo = STATUS_LABELS[ticket.status] || STATUS_LABELS.waiting;
   const isCalled = ticket.status === "called" || ticket.status === "serving";
-
   const waitMinutes = Math.round((Date.now() - new Date(ticket.createdAt).getTime()) / 60000);
 
   return (
@@ -50,13 +50,13 @@ const QueueTicket = ({ ticket, position, onServe, onSkip, showActions = true }) 
       {/* Actions */}
       {showActions && (
         <div className={styles.actions}>
-          {isCalled && onServe && (
+          {/* Only show Serve button when AUTO_CALL_NEXT is false */}
+          {isCalled && onServe && !AUTO_CALL_NEXT && (
             <Button variant="success" size="sm" onClick={() => onServe(ticket._id)}>✓ Serve</Button>
           )}
           {(isCalled || ticket.status === "waiting") && onSkip && (
             <Button variant="danger" size="sm" onClick={() => onSkip(ticket._id)}>Skip</Button>
           )}
-
         </div>
       )}
     </div>
