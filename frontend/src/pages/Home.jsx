@@ -187,9 +187,9 @@ const MyTicket = ({ ticket, position, onLeave }) => {
         </div>
       </div>
 
-      <div className={styles.ticketActions}>
+      {/* <div className={styles.ticketActions}>
         <Button variant="danger" size="sm" onClick={onLeave}>Leave Queue</Button>
-      </div>
+      </div> */}
     </div>
   );
 };
