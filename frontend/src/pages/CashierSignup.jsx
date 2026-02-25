@@ -117,7 +117,7 @@ export default function CashierSignup() {
                 autoComplete="new-password"
               />
               <button type="button" className={styles.eyeBtn} onClick={() => setShowPass(v => !v)}>
-                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPass ? <EyeOff size={16} color="#E2E8F5" /> : <Eye size={16} color="#E2E8F5" />}
               </button>
             </div>
             {/* Strength bar */}
@@ -145,7 +145,7 @@ export default function CashierSignup() {
                 autoComplete="new-password"
               />
               <button type="button" className={styles.eyeBtn} onClick={() => setShowConfirm(v => !v)}>
-                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showConfirm ? <EyeOff size={16} color="#E2E8F5" /> : <Eye size={16} color="#E2E8F5" />}
               </button>
               {passwordsMatch && <span className={styles.matchIcon}>✓</span>}
               {passwordsMismatch && <span className={styles.mismatchIcon}>✗</span>}
