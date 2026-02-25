@@ -267,7 +267,6 @@ app.get("/api/auth/me", protect, (req, res) => res.json({ user: req.user }));
 
 app.post("/api/auth/register", async (req, res, next) => {
   try {
-    if (process.env.NODE_ENV === "production") return res.status(403).json({ message: "Registration disabled in production." });
     const { name, username, password, confirmPassword, counter } = req.body;
     if (!name || !username || !password) return res.status(400).json({ message: "Name, username, and password are required." });
     if (password !== confirmPassword) return res.status(400).json({ message: "Passwords do not match." });
