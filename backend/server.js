@@ -10,57 +10,12 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// ─── CORS Configuration ──────────────────────────────────────────────────────
-// Set allowed origins - can be configured via environment variable
-const allowedOrigins = process.env.CORS_ORIGIN 
-  ? process.env.CORS_ORIGIN.split(',')
-  : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, Postman)
-    if (!origin) return callback(null, true);
-    
-    // Allow all origins in development
-    if (process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
-    }
-    
-    // Check if origin is in allowed list
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  exposedHeaders: ["Content-Length", "X-Request-Id"],
-  maxAge: 86400, // 24 hours
-};
-
-// Apply CORS middleware BEFORE other middleware
-app.use(cors(corsOptions));
-
-// Handle preflight requests
-app.options('*', cors(corsOptions));
-
 // ─── Socket.io ───────────────────────────────────────────────────────────────
+const corsOrigin = (origin, callback) => callback(null, true); // Allow all origins
+
 const io = new Server(server, {
   cors: {
-    origin: function (origin, callback) {
-      // Allow all origins in development
-      if (process.env.NODE_ENV !== 'production') {
-        return callback(null, true);
-      }
-      // Check allowed origins in production
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: corsOrigin,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -258,6 +213,12 @@ const getAnalyticsSnapshot = async () => {
 };
 
 // ─── App Middleware ───────────────────────────────────────────────────────────
+app.use(cors({
+  origin: corsOrigin,
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(express.json());
 
 const protect = async (req, res, next) => {
@@ -521,5 +482,4 @@ server.listen(PORT, () => {
   console.log(`🚀 Qampus running on http://localhost:${PORT}`);
   console.log(`📡 Socket.io ready`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`🔐 CORS: ${process.env.NODE_ENV === 'production' ? 'Production mode' : 'Development mode (all origins)'}`);
 });
