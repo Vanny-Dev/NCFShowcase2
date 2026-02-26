@@ -347,10 +347,9 @@ export default function HomePage() {
   });
 
   const handleJoin = async () => {
-    if (!name.trim()) return;
     setJoining(true);
     try {
-      const res = await queueAPI.join({ name: name.trim(), transactionType: txType });
+      const res = await queueAPI.join({ name: name.trim() || "Anonymous", transactionType: txType });
       notifiedRef.current = { thirdInLine: false, warning: false, alert: false };
       setMyTicket(res.data.ticket);
       addToast(`Ticket #${String(res.data.ticket.ticketNumber).padStart(3, "0")} — You've joined the queue!`, "success");
@@ -414,7 +413,7 @@ export default function HomePage() {
 
               <div className={styles.form}>
                 <div className={styles.field}>
-                  <label className={styles.label}>Full Name</label>
+                  <label className={styles.label}>Full Name <span className={styles.optional}>(optional)</span></label>
                   <input
                     className={styles.input}
                     type="text"
@@ -430,7 +429,7 @@ export default function HomePage() {
                     {TRANSACTION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
-                <Button variant="primary" size="lg" onClick={handleJoin} loading={joining} disabled={!name.trim()} fullWidth>
+                <Button variant="primary" size="lg" onClick={handleJoin} loading={joining} fullWidth>
                   Get My Ticket →
                 </Button>
               </div>
